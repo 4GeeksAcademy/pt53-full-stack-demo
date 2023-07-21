@@ -9,6 +9,7 @@ import { Single } from "./pages/single";
 import { LightSwitch } from "./component/lightswitch.jsx";
 import { RecipesPage } from "./pages/recipes.jsx";
 import { Params } from "./pages/params.jsx";
+import { ShipPage } from "./pages/ship_page.jsx";
 
 import injectContext from "./store/appContext";
 
@@ -32,7 +33,10 @@ const Layout = () => {
           <Routes>
             <Route element={<Home />} path="/" />
             <Route element={<RecipesPage />} path="/recipes" />
-            <Route element={<Params />} path="/params/:message" />
+            <Route element={<ShipPage />} path="/ships/:ship_id" />
+            <Route path="/params">
+              <Route element={<Params />} path=":message" />
+            </Route>
             <Route element={<LightSwitch />} path="/newpage" />
             <Route element={<Demo />} path="/demo" />
             <Route element={<Single />} path="/single/:theid" />
