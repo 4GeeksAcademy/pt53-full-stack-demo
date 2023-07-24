@@ -36,6 +36,10 @@ const Layout = () => {
             <Route element={<ShipPage />} path="/ships/:ship_id" />
             <Route path="/params">
               <Route element={<Params />} path=":message" />
+              <Route
+                element={<h1>You don't have a message, oops.</h1>}
+                path=""
+              />
             </Route>
             <Route element={<LightSwitch />} path="/newpage" />
             <Route element={<Demo />} path="/demo" />

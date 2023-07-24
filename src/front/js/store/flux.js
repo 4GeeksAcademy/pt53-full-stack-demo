@@ -15,6 +15,15 @@ const getState = ({ getStore, getActions, setStore }) => {
           initial: "white",
         },
       ],
+      user: {
+        username: "sombra",
+        email: "sombra@catemail.com",
+        color: {
+          h: 270,
+          s: 75,
+          l: 50,
+        },
+      },
       ships: [
         {
           name: "B-wing",
@@ -39,6 +48,12 @@ const getState = ({ getStore, getActions, setStore }) => {
       ],
     },
     actions: {
+      changeUserAttrs: (key, val) => {
+        let userObj = JSON.parse(JSON.stringify(getStore().user));
+        userObj[key] = val;
+        setStore({ user: userObj });
+      },
+
       changeMessage: () => {
         setStore({
           message:
@@ -48,19 +63,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       exampleFunction: () => {
         getActions().changeColor(0, "green");
-      },
-
-      getMessage: async () => {
-        try {
-          // fetching data from the backend
-          const resp = await fetch(process.env.BACKEND_URL + "/api/hello");
-          const data = await resp.json();
-          setStore({ message: data.message });
-          // don't forget to return something, that is how the async resolves
-          return data;
-        } catch (error) {
-          console.log("Error loading message from backend", error);
-        }
       },
 
       changeColor: (index, color) => {
