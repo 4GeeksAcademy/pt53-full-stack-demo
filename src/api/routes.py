@@ -4,6 +4,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
+from datetime import date
 
 api = Blueprint('api', __name__)
 
@@ -16,3 +17,18 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+
+@api.route("/is_it_friday_yet", methods=["GET", "POST"])
+def is_it_friday():
+    if date.today().weekday() == 4:
+        return jsonify(is_it_friday=True)
+    else:
+        return jsonify(is_it_friday=False)
+
+
+@api.route("/users", methods=["GET"])
+def get_users():
+    return jsonify(
+        users=[user.serialize() for user in User.query.all()]
+    )

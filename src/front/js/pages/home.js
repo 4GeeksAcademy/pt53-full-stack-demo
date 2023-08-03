@@ -12,6 +12,8 @@ export const Home = () => {
   const [email, setEmail] = useState("");
   const [hue, setHue] = useState("");
 
+  const [ships, setShips] = useState([]);
+
   useEffect(() => {
     setUser(store.user.username);
     setEmail(store.user.email);
@@ -27,6 +29,21 @@ export const Home = () => {
       l: store.user.color.l,
     });
   }, [user, email, hue]);
+
+  useEffect(async () => {
+    const resps = await Promise.all(
+      ["starships", "planets"].map((url) =>
+        fetch(`https://swapi.dev/api/${url}`)
+      )
+    );
+    const jsonData = await Promise.all(resps.map((resp) => resp.json()));
+
+    for (let data of jsonData) {
+      if (data.next.split("/").includes("starships")) {
+        setShips(data.results);
+      }
+    }
+  }, []);
 
   return (
     <div className="text-center mt-5">
@@ -45,7 +62,7 @@ export const Home = () => {
           <input value={hue} onChange={(ev) => setHue(ev.target.value)} />
         </label>
       </div>
-      {store.ships.map((ship, idx) => (
+      {ships.map((ship, idx) => (
         <Card
           img={`https://starwars-visualguide.com/assets/img/starships/${
             ship.url.split("/")[5]
