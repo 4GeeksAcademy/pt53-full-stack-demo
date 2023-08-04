@@ -11,6 +11,10 @@ api = Blueprint('api', __name__)
 
 @api.route("/is_it_friday_yet", methods=["GET", "POST"])
 def is_it_friday():
+    if request.method == "POST":
+        return jsonify(
+            message="You can't change the day with a post request."
+        ), 400
     return jsonify(
         is_it_friday=(date.today().weekday() == 4),
         this_is_always_friday="https://www.youtube.com/watch?v=kfVsfOSbJY0"
