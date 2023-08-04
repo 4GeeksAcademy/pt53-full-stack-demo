@@ -2,29 +2,19 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Pet
 from api.utils import generate_sitemap, APIException
 from datetime import date
 
 api = Blueprint('api', __name__)
 
 
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
-
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-
-    return jsonify(response_body), 200
-
-
 @api.route("/is_it_friday_yet", methods=["GET", "POST"])
 def is_it_friday():
-    if date.today().weekday() == 4:
-        return jsonify(is_it_friday=True)
-    else:
-        return jsonify(is_it_friday=False)
+    return jsonify(
+        is_it_friday=(date.today().weekday() == 4),
+        this_is_always_friday="https://www.youtube.com/watch?v=kfVsfOSbJY0"
+    )
 
 
 @api.route("/users", methods=["GET"])
@@ -32,3 +22,38 @@ def get_users():
     return jsonify(
         users=[user.serialize() for user in User.query.all()]
     )
+
+
+@api.route('/pets', methods=["GET"])
+def get_pets():
+    pets = Pet.query.all()
+    return jsonify(
+        pets=[pet.serialize() for pet in pets]
+    )
+
+
+@api.route('/pets/<int:id>', methods=["GET"])
+def get_pet(id):
+    pet = Pet.query.filter_by(id=id).first()
+    if pet:
+        return jsonify(pet=pet.serialize())
+    else:
+        return jsonify(
+            message=f"No pet with id {id}",
+            pet=None
+        )
+
+
+@api.route('/pets', methods=["POST"])
+def post_pets():
+    pet_data = request.json
+    new_pet = Pet(
+        user_id=pet_data.get("user_id", 1),
+        name=pet_data.get("name", "Unnamed Pet"),
+        picture_url=pet_data.get("picture_url", None),
+    )
+
+    db.session.merge(new_pet)
+    db.session.commit()
+
+    return jsonify()
