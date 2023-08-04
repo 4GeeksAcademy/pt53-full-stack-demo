@@ -47,11 +47,7 @@ def get_pet(id):
 @api.route('/pets', methods=["POST"])
 def post_pets():
     pet_data = request.json
-    new_pet = Pet(
-        user_id=pet_data.get("user_id", 1),
-        name=pet_data.get("name", "Unnamed Pet"),
-        picture_url=pet_data.get("picture_url", None),
-    )
+    new_pet = Pet(**pet_data)
     db.session.merge(new_pet)
     db.session.commit()
     return '', 204
