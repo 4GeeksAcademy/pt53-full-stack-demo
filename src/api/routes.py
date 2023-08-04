@@ -29,19 +29,19 @@ def get_pets():
     pets = Pet.query.all()
     return jsonify(
         pets=[pet.serialize() for pet in pets]
-    )
+    ), 200
 
 
 @api.route('/pets/<int:id>', methods=["GET"])
 def get_pet(id):
     pet = Pet.query.filter_by(id=id).first()
     if pet:
-        return jsonify(pet=pet.serialize())
+        return jsonify(pet=pet.serialize()), 200
     else:
         return jsonify(
             message=f"No pet with id {id}",
             pet=None
-        )
+        ), 418
 
 
 @api.route('/pets', methods=["POST"])
@@ -52,8 +52,6 @@ def post_pets():
         name=pet_data.get("name", "Unnamed Pet"),
         picture_url=pet_data.get("picture_url", None),
     )
-
     db.session.merge(new_pet)
     db.session.commit()
-
-    return jsonify()
+    return '', 204
