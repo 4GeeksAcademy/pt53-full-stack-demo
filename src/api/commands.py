@@ -41,17 +41,24 @@ def setup_commands(app):
     @app.cli.command("popdb")
     def populate_db():
         """
-        TBD (while you are in breakout rooms.)
+        This function turns testdata.json into db objects.
+
+        It is way simpler than before I restructured the json file.
+        But hey, sometimes restucturing your data
+        fixes all of your problems!
         """
         with open("./src/api/testdata.json", "rt") as test_data:
             data = json.load(test_data)
 
+            # For each of users/pets/ratings we iterate over their objects.
             for user in tqdm(data["users"]):
+                # Turn them into db objects and merge them into our db session.
                 db.session.merge(User(
                     id=user["id"],
                     email=user["email"],
                     password=''.join(random.choices(string.ascii_letters, k=8))
                 ))
+            # Then we commit the changes to the db.
             db.session.commit()
 
             for pet in tqdm(data["pets"]):
