@@ -38,6 +38,15 @@ def get_pets():
 
 @api.route('/pets/<int:id>', methods=["GET"])
 def get_pet(id):
+    """
+    You can get info out of the url by using <datatype:variable_name>
+    placeholders in the route.
+
+    If you do this, you must have accept a parameter to your
+    route function that matches variable_name, for example, if your
+    route is '/weather/<str:zip_code>', your function must take an
+    argument called zip_code.
+    """
     pet = Pet.query.filter_by(id=id).first()
     if pet:
         return jsonify(pet=pet.serialize()), 200
@@ -48,10 +57,33 @@ def get_pet(id):
         ), 418
 
 
+"""
+POST
+BODY: {
+    "name": "Little Jerkface",
+    "user_id": 1,
+    "picture_url": "https://placekitten.com/666"
+}
+"""
+
+
 @api.route('/pets', methods=["POST"])
 def post_pets():
+    """
+    Step 1: get the data from the request via request.json
+    Step 2: Make a new instance of our database model.
+        We can use keyword arguments or object deconstruction
+        to fill the properties of the new db object.
+        e.g.: Pet(name="Little Jerkface", user_id=1, ...)
+        -or-
+        Pet(**request.json) (if your json body matches your property names)
+    Step 3: Stage the data into our db session with
+        db.session.merge(new_obj) or db.session.add(new_obj)
+    Step 4: Commit the changes to the db with db.session.commit()
+    """
     pet_data = request.json
     new_pet = Pet(**pet_data)
     db.session.merge(new_pet)
     db.session.commit()
+    # This is called an empty response:
     return '', 204
