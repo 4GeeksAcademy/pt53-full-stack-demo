@@ -1,0 +1,92 @@
+{
+  "users": [
+    {
+      "email": "sombra@catemail.com",
+      "id": 1
+    },
+    {
+      "email": "test_user1@test.com",
+      "id": 2
+    },
+    {
+      "email": "test_user2@test.com",
+      "id": 3
+    },
+    {
+      "email": "test_user3@test.com",
+      "id": 4
+    },
+    {
+      "email": "test_user4@test.com",
+      "id": 5
+    },
+    {
+      "email": "test_user5@test.com",
+      "id": 6
+    }
+  ],
+  "pets": [
+    {
+      "id": 1,
+      "name": "Sombra",
+      "picture_url": "https://placekitten.com/879",
+      "user_id": 1
+    },
+    {
+      "id": 2,
+      "name": "Grizelle",
+      "picture_url": "https://placekitten.com/999",
+      "user_id": 1
+    },
+    {
+      "id": 3,
+      "name": "Zorya",
+      "picture_url": "https://en.wikipedia.org/wiki/Nebelung#/media/File:Pinto-2.jpg",
+      "user_id": 2
+    },
+    {
+      "id": 4,
+      "name": "Kirby",
+      "picture_url": "https://upload.wikimedia.org/wikipedia/commons/2/27/Short-haired-Dachshund.jpg",
+      "user_id": 3
+    },
+    {
+      "id": 5,
+      "name": "Romba",
+      "picture_url": "https://en.wikipedia.org/wiki/Python_(programming_language)#/media/File:Python-logo-notext.svg",
+      "user_id": 4
+    },
+    {
+      "id": 6,
+      "name": "Darkness",
+      "picture_url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Blackcat-Lilith.jpg",
+      "user_id": 4
+    },
+    {
+      "id": 7,
+      "name": "Little Jerkface",
+      "picture_url": "https://placekitten.com/666",
+      "user_id": 5
+    }
+  ],
+  "ratings": [
+    {
+      "cuteness": 5,
+      "good_value": 2,
+      "goodness": "sake",
+      "id": 1,
+      "pet_id": 1,
+      "precociousness": 5,
+      "user_id": 2
+    },
+    {
+      "cuteness": 5,
+      "good_value": 0,
+      "goodness": "gracious",
+      "id": 2,
+      "pet_id": 1,
+      "precociousness": 5,
+      "user_id": 3
+    }
+  ]
+}
