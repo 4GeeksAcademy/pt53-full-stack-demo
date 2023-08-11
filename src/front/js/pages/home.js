@@ -5,6 +5,7 @@ import "../../styles/home.css";
 import { Card } from "../component/card.jsx";
 import { Link } from "react-router-dom";
 import { UserInfo } from "../component/userInfo.jsx";
+import { LoginForm } from "../component/login.jsx";
 
 export const Home = () => {
   const { store, actions } = useContext(Context);
@@ -14,21 +15,21 @@ export const Home = () => {
 
   const [ships, setShips] = useState([]);
 
-  useEffect(() => {
-    setUser(store.user.username);
-    setEmail(store.user.email);
-    setHue(store.user.color.h);
-  }, []);
+  // useEffect(() => {
+  //   setUser(store.user.username);
+  //   setEmail(store.user.email);
+  //   setHue(store.user.color.h);
+  // }, []);
 
-  useEffect(() => {
-    actions.changeUserAttrs("username", user);
-    actions.changeUserAttrs("email", email);
-    actions.changeUserAttrs("color", {
-      h: parseInt(hue),
-      s: store.user.color.s,
-      l: store.user.color.l,
-    });
-  }, [user, email, hue]);
+  // useEffect(() => {
+  //   actions.changeUserAttrs("username", user);
+  //   actions.changeUserAttrs("email", email);
+  //   actions.changeUserAttrs("color", {
+  //     h: parseInt(hue),
+  //     s: store.user.color.s,
+  //     l: store.user.color.l,
+  //   });
+  // }, [user, email, hue]);
 
   useEffect(async () => {
     const resps = await Promise.all(
@@ -47,8 +48,13 @@ export const Home = () => {
 
   return (
     <div className="text-center mt-5">
-      <UserInfo />
-      <div className="card mx-auto" style={{ width: "25rem" }}>
+      <Card>token: {JSON.stringify(store.user)}</Card>
+      <button className="btn btn-primary" onClick={actions.get_identity}>
+        Get User Data
+      </button>
+      <LoginForm />
+      {/* <UserInfo /> */}
+      {/* <div className="card mx-auto" style={{ width: "25rem" }}>
         <label>
           Username:
           <input value={user} onChange={(ev) => setUser(ev.target.value)} />
@@ -61,8 +67,8 @@ export const Home = () => {
           Hue:
           <input value={hue} onChange={(ev) => setHue(ev.target.value)} />
         </label>
-      </div>
-      {ships.map((ship, idx) => (
+      </div> */}
+      {/* {ships.map((ship, idx) => (
         <Card
           img={`https://starwars-visualguide.com/assets/img/starships/${
             ship.url.split("/")[5]
@@ -87,7 +93,7 @@ export const Home = () => {
             </li>
           </ul>
         </Card>
-      ))}
+      ))} */}
     </div>
   );
 };

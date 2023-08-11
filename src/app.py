@@ -21,6 +21,12 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
+# """Singin' la la la la la la la la"""
+# pbkdf2:sha256:600000$vshbZUwa4vyAyvrN$6bd66c41979d8826f3a42f62560470abe6e88e12090ada4a2847c3db0c8da5a6
+
+# """password"""
+# pbkdf2:sha256:600000$LnXK0idRGuGm5K7F$67577214f543d20d8ecefd6e6f18af4d319e5097c99490e0c084eec3c832f6bc
+
 app.config["JWT_SECRET_KEY"] = """Singin' la la la la la la la la"""  # Change this!
 jwt = JWTManager(app)
 

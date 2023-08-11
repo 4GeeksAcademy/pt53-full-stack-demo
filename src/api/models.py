@@ -1,6 +1,8 @@
 from enum import Enum
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_property
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -9,7 +11,8 @@ class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
+    _password = db.Column(db.String(256), unique=False,
+                          nullable=False, default="CHANGE THIS PASSWORD")
     is_active = db.Column(db.Boolean(), default=True)
 
     def __repr__(self):
@@ -21,6 +24,17 @@ class User(db.Model):
             "email": self.email,
             "pets": [pet.serialize() for pet in self.pets],
         }
+
+    @hybrid_property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, password):
+        self._password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self._password, password)
 
 
 class Pet(db.Model):

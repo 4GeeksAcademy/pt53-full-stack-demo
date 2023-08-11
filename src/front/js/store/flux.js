@@ -1,6 +1,8 @@
 const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
+      token: "",
+      user: {},
       message:
         "This is a test of an old library that was sent to a farm and super happy we swear.",
       demo: [
@@ -15,15 +17,15 @@ const getState = ({ getStore, getActions, setStore }) => {
           initial: "white",
         },
       ],
-      user: {
-        username: "sombra",
-        email: "sombra@catemail.com",
-        color: {
-          h: 270,
-          s: 75,
-          l: 50,
-        },
-      },
+      // user: {
+      //   username: "sombra",
+      //   email: "sombra@catemail.com",
+      //   color: {
+      //     h: 270,
+      //     s: 75,
+      //     l: 50,
+      //   },
+      // },
       ships: [
         {
           name: "B-wing",
@@ -48,6 +50,39 @@ const getState = ({ getStore, getActions, setStore }) => {
       ],
     },
     actions: {
+      login: async (email, password) => {
+        const resp = await fetch(`${process.env.BACKEND_URL}/api/login`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+          method: "POST",
+        });
+
+        if (!resp.ok) {
+          setStore({ message: "Login attempt failed." });
+          return false;
+        }
+        const data = await resp.json();
+        console.log(data);
+        setStore(data);
+        return true;
+      },
+
+      get_identity: async () => {
+        const resp = await fetch(`${process.env.BACKEND_URL}/api/jwt_ident`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${getStore().token}`,
+          },
+        });
+
+        setStore({ user: await resp.json() });
+      },
+
       changeUserAttrs: (key, val) => {
         let userObj = JSON.parse(JSON.stringify(getStore().user));
         userObj[key] = val;

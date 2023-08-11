@@ -5,6 +5,7 @@ from flask import request, jsonify, Blueprint
 from flask_jwt_extended import (
     create_access_token, jwt_required, get_jwt_identity
 )
+from werkzeug.security import generate_password_hash
 
 from api.models import db, User, Pet
 from datetime import date
@@ -32,8 +33,14 @@ def what_even_is_a_jwt():
 def what_even_is_an_identity():
     ident = get_jwt_identity()
     return jsonify(
-        identity=ident
+        identity=ident,
+        user=User.query.filter_by(email=ident).first().serialize()
     )
+
+
+@api.route('/pwd/<string:password>')
+def pwd_hash(password):
+    return generate_password_hash(password), 200
 
 
 @api.route("/login", methods=["POST"])
@@ -56,7 +63,7 @@ def login():
 
     if not user:
         return jsonify(message="Invalid credentials"), 401
-    if user.password != data.get("password", None):
+    if not user.check_password(data.get("password", None)):
         return jsonify(message="Invalid credentials"), 401
 
     token = create_access_token(user.email)
