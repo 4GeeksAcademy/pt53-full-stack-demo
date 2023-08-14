@@ -7,7 +7,9 @@ from flask_jwt_extended import (
 )
 from werkzeug.security import generate_password_hash
 
-from api.models import db, User, Pet
+from api.models import (
+    db, User, Pet, Post
+)
 from datetime import date
 
 api = Blueprint('api', __name__)
@@ -172,3 +174,12 @@ def post_pets():
     db.session.commit()
     # This is called an empty response:
     return '', 204
+
+
+@api.route("/posts", methods=["GET"])
+def posts():
+    return jsonify(
+        posts=[
+            post.serialize(children=False) for post in Post.query.all()
+        ]
+    )

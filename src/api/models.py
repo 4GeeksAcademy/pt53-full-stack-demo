@@ -101,3 +101,73 @@ class Rating(db.Model):
             "goodness": self.goodness.name,
             "good_value": self.goodness.value,
         }
+
+
+# Space Ghost:
+post_to_post = db.Table(
+    "post_to_post",
+    db.metadata,
+    db.Column(
+        "parent_post_id",
+        db.Integer,
+        db.ForeignKey('post.id')
+    ),
+    db.Column(
+        "child_post_id",
+        db.Integer,
+        db.ForeignKey('post.id')
+    ),
+)
+
+
+class Post(db.Model):
+    """
+        This type of structure (a tree) could be used for:
+            - ecommerce (category trees)
+            - Media libraries (content organization)
+            - Folder structures (folders)
+            - HTML documents
+    """
+    __tablename__ = 'post'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(256))
+    content = db.Column(db.Text)
+    author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    author = db.relationship(
+        "User",
+        backref=db.backref(
+            "posts",
+            uselist=True
+        ),
+        uselist=False
+    )
+    parent = db.relationship(
+        "Post",
+        secondary=post_to_post,
+        primaryjoin=(id == post_to_post.c.parent_post_id),
+        secondaryjoin=(id == post_to_post.c.child_post_id),
+        backref=db.backref(
+            "replies",
+            uselist=True
+        ),
+        uselist=False
+    )
+
+    def __repr__(self):
+        return f"<Post {self.title}>"
+
+    def serialize(self, children=True):
+        data = {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content,
+            "author": self.author.serialize(),
+            "parent": None if not self.parent else self.parent.id,
+        }
+
+        if children:
+            return {
+                **data,
+                "replies": [reply.serialize() for reply in self.replies],
+            }
+        return data
