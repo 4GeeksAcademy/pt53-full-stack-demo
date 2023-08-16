@@ -8,7 +8,7 @@ from flask_jwt_extended import (
 from werkzeug.security import generate_password_hash
 
 from api.models import (
-    db, User, Pet, Post
+    db, User, Pet, Post, Category, Product
 )
 from datetime import date
 
@@ -182,4 +182,38 @@ def posts():
         posts=[
             post.serialize(children=False) for post in Post.query.all()
         ]
+    )
+
+
+@api.route("/categories", methods=["GET"])
+def get_categories():
+    """
+    /categories?page=1&count=10
+    """
+    args = request.args
+    count = min(10, int(args.get("count", 10)))
+    offset = int(args.get("offset", 0))
+    results = Category.query.limit(count).offset(offset).all()
+    return jsonify(
+        total=Category.query.count(),
+        categories=[cat.serialize() for cat in results]
+    )
+
+
+@api.route("/categories/breadcrumb/<int:cat_id>", methods=["GET"])
+def get_breadcrumb(cat_id):
+    breadcrumb = []
+    category = Category.query.filter_by(id=cat_id).first()
+    limit = 100
+
+    while category.parent is not None:
+        breadcrumb.append(category.name)
+        category = category.parent
+        limit -= 1
+        if limit <= 0:
+            break
+
+    return jsonify(
+        category_id=cat_id,
+        breadcrumb=breadcrumb
     )

@@ -171,3 +171,99 @@ class Post(db.Model):
                 "replies": [reply.serialize() for reply in self.replies],
             }
         return data
+
+
+category_tree = db.Table(
+    "category_tree",
+    db.metadata,
+    db.Column(
+        "parent_cat_id",
+        db.Integer,
+        db.ForeignKey('category.id')
+    ),
+    db.Column(
+        "child_cat_id",
+        db.Integer,
+        db.ForeignKey('category.id')
+    ),
+)
+
+
+cat_to_prod = db.Table(
+    "cat_to_prod",
+    db.metadata,
+    db.Column(
+        "category_id",
+        db.Integer,
+        db.ForeignKey('category.id')
+    ),
+    db.Column(
+        "product_id",
+        db.Integer,
+        db.ForeignKey('product.id')
+    ),
+)
+
+
+class Category(db.Model):
+    __tablename__ = "category"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    parent = db.relationship(
+        "Category",
+        secondary=category_tree,
+        primaryjoin=(id == category_tree.c.parent_cat_id),
+        secondaryjoin=(id == category_tree.c.child_cat_id),
+        backref=db.backref(
+            "children",
+            uselist=True
+        ),
+        uselist=False
+    )
+
+    def __repr__(self):
+        return f"<Category {self.name}>"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "parent": None if not self.parent else self.parent.id,
+            "children": [
+                child.serialize() for child in self.children
+            ]
+        }
+
+
+class Product(db.Model):
+    __tablename__ = "product"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    description = db.Column(db.Text())
+    price = db.Column(db.Float())  # Don't use floats for money, please.
+    cost = db.Column(db.Float())  # Don't use floats for money, please.
+    categories = db.relationship(
+        "Category",
+        secondary=cat_to_prod,
+        primaryjoin=(id == cat_to_prod.c.product_id),
+        backref=db.backref(
+            "products",
+            uselist=True
+        ),
+        uselist=True
+    )
+
+    def __repr__(self):
+        return f"<Product {self.name}>"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "price": self.price,
+            "cost": self.cost,
+            "categories": [
+                cat.name for cat in self.categories
+            ],
+        }
