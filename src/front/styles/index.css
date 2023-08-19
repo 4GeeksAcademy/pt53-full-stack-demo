@@ -1,3 +1,52 @@
 /* 
     General Styles used on every website (Don't Repeat Yourself)
 */
+
+/*
+    You can either declare variables and use media queries
+    to let the browser decide...
+*/
+
+:root {
+  --text: hsl(100, 20%, 97%);
+  --background: hsl(93, 18%, 10%);
+  --primary: hsl(272, 16%, 77%);
+  --secondary: hsl(96, 16%, 6%);
+  --accent: hsl(268, 16%, 46%);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --text: hsl(93, 18%, 10%);
+    --background: hsl(100, 20%, 97%);
+    --primary: hsl(272, 16%, 77%);
+    --secondary: hsl(98, 15%, 86%);
+    --accent: hsl(268, 16%, 16%);
+  }
+}
+
+/*
+    Or you can dynamically swap classes with this setup:
+*/
+
+div#app .dark {
+  --text: hsl(100, 20%, 97%);
+  --background: hsl(93, 18%, 10%);
+  --primary: hsl(272, 16%, 77%);
+  --secondary: hsl(96, 16%, 6%);
+  --accent: hsl(268, 16%, 46%);
+}
+
+div#app .light {
+  --text: hsl(93, 18%, 10%);
+  --background: hsl(100, 20%, 97%);
+  --primary: hsl(272, 16%, 77%);
+  --secondary: hsl(98, 15%, 86%);
+  --accent: hsl(268, 16%, 16%);
+}
+
+* {
+  color: var(--text) !important;
+  background-color: var(--background) !important;
+  border-bottom: 3px solid var(--accent) !important;
+}
