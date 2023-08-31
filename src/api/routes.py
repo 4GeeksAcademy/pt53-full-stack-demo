@@ -8,9 +8,12 @@ from flask_jwt_extended import (
 from werkzeug.security import generate_password_hash
 
 from api.models import (
-    db, User, Pet, Post, Category, Product
+    db, User, Pet, Post, Category, Product, StoredData
 )
 from datetime import date
+
+import random
+import string
 
 api = Blueprint('api', __name__)
 
@@ -89,7 +92,11 @@ def signup():
     if user:
         return jsonify(message="A user with that email already exists!"), 400
 
-    user = User(**data)
+    # user = User(**data)
+    user = User(
+        email=data["email"],
+        password=data["password"]
+    )
     db.session.add(user)
     db.session.commit()
     return '', 204
@@ -217,3 +224,25 @@ def get_breadcrumb(cat_id):
         category_id=cat_id,
         breadcrumb=breadcrumb
     )
+
+
+@api.route("/json")
+def json_route():
+    return jsonify(
+        items=[item.serialize() for item in StoredData.query.all()]
+    )
+
+
+@api.route("/add_storeddata")
+def add_storeddata():
+    some_dict = {
+        ''.join(random.choices(string.ascii_letters, k=5)): ''.join(random.choices(string.ascii_letters, k=5)) for _ in range(10)
+    }
+    data = StoredData(
+        key=''.join(random.choices(string.ascii_letters, k=5)),
+        value=some_dict
+    )
+    db.session.merge(data)
+    db.session.commit()
+
+    return jsonify(some_dict)

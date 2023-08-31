@@ -2,7 +2,9 @@ from enum import Enum
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import (
+    generate_password_hash, check_password_hash
+)
 
 db = SQLAlchemy()
 
@@ -11,8 +13,12 @@ class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    _password = db.Column(db.String(256), unique=False,
-                          nullable=False, default="CHANGE THIS PASSWORD")
+    _password = db.Column(
+        db.String(256),
+        unique=False,
+        nullable=False,
+        default="CHANGE THIS PASSWORD"
+    )
     is_active = db.Column(db.Boolean(), default=True)
 
     def __repr__(self):
@@ -266,4 +272,21 @@ class Product(db.Model):
             "categories": [
                 cat.name for cat in self.categories
             ],
+        }
+
+
+class StoredData(db.Model):
+    __tablename__ = "stored_data"
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(128), unique=True)
+    value = db.Column(db.JSON)
+
+    def __repr__(self):
+        return f"<Product {self.name}>"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "key": self.key,
+            "value": self.value,
         }
