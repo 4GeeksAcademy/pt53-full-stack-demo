@@ -8,9 +8,10 @@ from flask_jwt_extended import (
 from werkzeug.security import generate_password_hash
 
 from api.models import (
-    db, User, Pet, Post, Category, Product, StoredData
+    db, User, Pet, Post, Category, Product, StoredData,
+    PasswordReset
 )
-from datetime import date
+from datetime import date, datetime
 
 import random
 import string
@@ -246,3 +247,48 @@ def add_storeddata():
     db.session.commit()
 
     return jsonify(some_dict)
+
+
+@api.route("/reset_pass", methods=["POST"])
+def send_reset_email():
+    """
+    {
+        "user_id": 1
+    }
+
+    RESPONSE: 204, NO CONTENT
+    """
+    data = request.json
+    user = User.query.filter_by(id=data.get("user_id")).first()
+    reset = PasswordReset(user=user)
+    db.session.merge(reset)
+    db.session.commit()
+    reset = PasswordReset.query.filter_by(
+        user=user
+    ).order_by(
+        db.desc(PasswordReset.created)
+    ).first()
+    # Send email with link to your reset page here.
+    # The URL will look something like http://your_url/reset/<uuid>
+    return "", 204
+
+
+@api.route("/reset_pass/<string:reset_id>", methods=["POST"])
+def reset_password(reset_id):
+    """
+    {
+        "password": "some password"
+    }
+
+    RESPONSE: 204, NO CONTENT
+    """
+    pr_req = PasswordReset.query.filter_by(reset_id=reset_id).first()
+    # You can validate the age of the request here.
+    # You will want to look at datetime.timedelta in the python docs
+    # https://docs.python.org/3/library/datetime.html
+    pr_req.user.password = request.json.get("password")
+    pr_req.complete = datetime.now()
+    db.session.merge(pr_req.user)
+    db.session.merge(pr_req)
+    db.session.commit()
+    return "", 204

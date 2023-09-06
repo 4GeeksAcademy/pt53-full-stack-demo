@@ -1,4 +1,6 @@
 from enum import Enum
+from uuid import uuid4
+from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -290,3 +292,18 @@ class StoredData(db.Model):
             "key": self.key,
             "value": self.value,
         }
+
+
+class PasswordReset(db.Model):
+    __tablename__ = "pass_reset"
+    id = db.Column(db.Integer, primary_key=True)
+
+    reset_id = db.Column(db.String(36), default=uuid4, unique=True)
+    created = db.Column(db.DateTime, default=datetime.now)
+    complete = db.Column(db.DateTime, default=None)
+    email_sent = db.Column(db.DateTime, default=None)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship(
+        "User", uselist=False
+    )
