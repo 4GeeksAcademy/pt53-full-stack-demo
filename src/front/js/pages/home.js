@@ -7,29 +7,37 @@ import { Link } from "react-router-dom";
 import { UserInfo } from "../component/userInfo.jsx";
 import { LoginForm } from "../component/login.jsx";
 
+const FakeUpload = ({ callback }) => {
+  const [f, setF] = useState(null);
+
+  return (
+    <div>
+      <input
+        type="file"
+        onChange={(ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          console.log(f);
+          setF(ev.target.files[0]);
+          console.log(f);
+        }}
+      />
+      <button className="btn btn-primary" onClick={() => callback(f)}>
+        This button does things.
+      </button>
+    </div>
+  );
+};
+
 export const Home = () => {
   const { store, actions } = useContext(Context);
-  const [user, setUser] = useState("");
-  const [email, setEmail] = useState("");
-  const [hue, setHue] = useState("");
+  const [showFileUpload, setShowFileUpload] = useState(false);
+  const [file, setFile] = useState(null);
 
-  const [ships, setShips] = useState([]);
-
-  // useEffect(() => {
-  //   setUser(store.user.username);
-  //   setEmail(store.user.email);
-  //   setHue(store.user.color.h);
-  // }, []);
-
-  // useEffect(() => {
-  //   actions.changeUserAttrs("username", user);
-  //   actions.changeUserAttrs("email", email);
-  //   actions.changeUserAttrs("color", {
-  //     h: parseInt(hue),
-  //     s: store.user.color.s,
-  //     l: store.user.color.l,
-  //   });
-  // }, [user, email, hue]);
+  const fakeUpload = (f) => {
+    setFile(f);
+    setShowFileUpload(false);
+  };
 
   useEffect(async () => {
     const resps = await Promise.all(
@@ -48,52 +56,15 @@ export const Home = () => {
 
   return (
     <div className="text-center mt-5">
-      <Card>token: {JSON.stringify(store.user)}</Card>
-      <button className="btn btn-primary" onClick={actions.get_identity}>
-        Get User Data
+      <button
+        className={
+          showFileUpload ? "btn btn-primary hidden" : "btn btn-primary"
+        }
+        onClick={() => setShowFileUpload(true)}
+      >
+        Upload File
       </button>
-      <LoginForm />
-      {/* <UserInfo /> */}
-      {/* <div className="card mx-auto" style={{ width: "25rem" }}>
-        <label>
-          Username:
-          <input value={user} onChange={(ev) => setUser(ev.target.value)} />
-        </label>
-        <label>
-          Email:
-          <input value={email} onChange={(ev) => setEmail(ev.target.value)} />
-        </label>
-        <label>
-          Hue:
-          <input value={hue} onChange={(ev) => setHue(ev.target.value)} />
-        </label>
-      </div> */}
-      {/* {ships.map((ship, idx) => (
-        <Card
-          img={`https://starwars-visualguide.com/assets/img/starships/${
-            ship.url.split("/")[5]
-          }.jpg`}
-          key={idx}
-        >
-          <h4 className="card-title">{ship.name}</h4>
-          <p className="card-text">
-            The {ship.manufacturer} {ship.model} is one of the cooler ships in
-            the Star Wars canon.
-          </p>
-          <ul className="list-group list-group-flush">
-            <li className="list-group-item">Length: {ship.length} m</li>
-            <li className="list-group-item">Crew count: {ship.crew}</li>
-            <li className="list-group-item">
-              Passenger count: {ship.passengers}
-            </li>
-            <li className="list-group-item">
-              <Link to={`/ships/${ship.url.split("/")[5]}`}>
-                <button className="btn btn-primary">Learn More!</button>
-              </Link>
-            </li>
-          </ul>
-        </Card>
-      ))} */}
+      {showFileUpload ? <FakeUpload callback={fakeUpload} /> : ""}
     </div>
   );
 };
